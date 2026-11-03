@@ -3,6 +3,14 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+_env = BASE_DIR / '.env'
+if _env.exists():
+    for _l in _env.read_text(encoding='utf-8').splitlines():
+        _l = _l.strip()
+        if _l and not _l.startswith('#') and '=' in _l:
+            _k, _v = _l.split('=', 1)
+            os.environ.setdefault(_k.strip(), _v.strip().strip("'\""))
+
 SECRET_KEY = 'django-insecure-f)ov1wh7&4zi5=xm@sq(rla^9lr%(p&adlbvvr9cv=&3la$8w#'
 
 VERCEL = bool(os.environ.get('VERCEL'))
