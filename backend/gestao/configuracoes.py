@@ -62,7 +62,7 @@ def _banco():
         u = urlparse(url)
         return {
             'ENGINE': 'django.db.backends.postgresql',
-            'NAME': u.path.lstrip('/') or 'postgres',
+            'NAME': u.path.lstrip('/').split('/')[0][:63] or 'postgres',
             'USER': unquote(u.username or ''),
             'PASSWORD': unquote(u.password or ''),
             'HOST': u.hostname,
