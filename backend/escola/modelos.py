@@ -3,6 +3,23 @@ from django.contrib.auth.models import User
 from django.db.models import Avg
 
 
+class PerfilUsuario(models.Model):
+    TIPOS = [
+        ('professor', 'Professor'),
+        ('agente_escolar', 'Agente Escolar'),
+    ]
+
+    usuario = models.OneToOneField(User, on_delete=models.CASCADE, related_name='perfil')
+    tipo = models.CharField('Tipo', max_length=20, choices=TIPOS)
+
+    class Meta:
+        verbose_name = 'Perfil de Usuário'
+        verbose_name_plural = 'Perfis de Usuário'
+
+    def __str__(self):
+        return f'{self.usuario.username} ({self.get_tipo_display()})'
+
+
 class Turma(models.Model):
     PERIODOS = [
         ('manha', 'Manhã'),

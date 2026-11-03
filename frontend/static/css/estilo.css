@@ -284,3 +284,7 @@ body { font-size: 1rem; }
 .alto-contraste :focus-visible { outline: 3px solid #0ff; }
 
 .alto-contraste .acess-painel h2 { color: #ff0 !important; }
+
+.opcoes-tipo { display: flex; gap: 1.5rem; margin: .25rem 0 1rem; }
+.opcoes-tipo label { display: flex; align-items: center; gap: .4rem; margin: 0; font-weight: 500; }
+.opcoes-tipo input { width: auto; margin: 0; }

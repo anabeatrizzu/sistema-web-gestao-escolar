@@ -11,6 +11,7 @@
         <li class="card">
             <strong>{{ d.nome }}</strong>
             <span>{{ d.turma }}</span>
+            <a href="{% url 'notas' d.pk %}" class="btn">Lançar notas</a>
         </li>
         {% endfor %}
     </ul>

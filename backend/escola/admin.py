@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .modelos import Turma, Disciplina, Aluno, Aula, Nota, Falta
+from .modelos import PerfilUsuario, Turma, Disciplina, Aluno, Aula, Nota, Falta
 
 admin.site.site_header = "Gestão Escolar"
 admin.site.site_title = "Painel Escolar"
@@ -48,3 +48,9 @@ class FaltaAdmin(admin.ModelAdmin):
     list_filter = ['justificada', 'aula__disciplina']
     search_fields = ['aluno__nome', 'justificativa']
 
+
+
+@admin.register(PerfilUsuario)
+class PerfilUsuarioAdmin(admin.ModelAdmin):
+    list_display = ['usuario', 'tipo']
+    list_filter = ['tipo']

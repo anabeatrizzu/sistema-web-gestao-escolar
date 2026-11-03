@@ -226,6 +226,11 @@ def frequencia(request, pk):
 @login_required
 def notas(request, pk):
     disciplina = get_object_or_404(Disciplina, pk=pk)
+    perfil = getattr(request.user, 'perfil', None)
+    eh_agente = request.user.is_superuser or (perfil and perfil.tipo == 'agente_escolar')
+    if disciplina.professor_id != request.user.pk and not eh_agente:
+        messages.error(request, 'Você não é o professor desta disciplina.')
+        return redirect('inicio')
     alunos = disciplina.turma.alunos.filter(ativo=True)
     if request.method == 'POST':
         for aluno in alunos:

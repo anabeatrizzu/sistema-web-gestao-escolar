@@ -47,12 +47,28 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'gestao.wsgi.application'
-DATABASES = {
-    'default': {
+def _banco():
+    url = os.environ.get('DATABASE_URL')
+    if url:
+        from urllib.parse import urlparse, unquote
+        u = urlparse(url)
+        return {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': u.path.lstrip('/') or 'postgres',
+            'USER': unquote(u.username or ''),
+            'PASSWORD': unquote(u.password or ''),
+            'HOST': u.hostname,
+            'PORT': u.port or 5432,
+            'OPTIONS': {'sslmode': 'require'},
+            'CONN_MAX_AGE': 0 if VERCEL else 60,
+        }
+    return {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': '/tmp/db.sqlite3' if VERCEL else BASE_DIR / 'db.sqlite3',
     }
-}
+
+
+DATABASES = {'default': _banco()}
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',

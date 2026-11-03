@@ -37,6 +37,12 @@
         <label for="id_email">E-mail</label>
         <input type="email" name="email" id="id_email" value="{{ form.email.value|default:'' }}" autocomplete="email">
 
+        <label>Eu sou *</label>
+        <div class="opcoes-tipo">
+            <label><input type="radio" name="tipo" value="professor" {% if form.tipo.value == 'professor' %}checked{% endif %} required> Professor</label>
+            <label><input type="radio" name="tipo" value="agente_escolar" {% if form.tipo.value == 'agente_escolar' %}checked{% endif %}> Agente Escolar</label>
+        </div>
+
         <label for="id_password1">Senha *</label>
         <input type="password" name="password1" id="id_password1" required autocomplete="new-password">
         <small class="ajuda-campo">A senha deve ter no mínimo 8 caracteres e não pode ser muito comum.</small>
