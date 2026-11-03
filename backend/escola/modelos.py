@@ -27,6 +27,7 @@ class Turma(models.Model):
         ('noite', 'Noite'),
     ]
 
+    dono = models.ForeignKey(User, on_delete=models.CASCADE, null=True, editable=False, related_name='+')
     nome = models.CharField('Nome da Turma', max_length=50)
     ano = models.IntegerField('Ano Letivo')
     periodo = models.CharField('Período', max_length=20, choices=PERIODOS)
@@ -41,6 +42,7 @@ class Turma(models.Model):
 
 
 class Disciplina(models.Model):
+    dono = models.ForeignKey(User, on_delete=models.CASCADE, null=True, editable=False, related_name='+')
     nome = models.CharField('Nome da Disciplina', max_length=100)
     turma = models.ForeignKey(Turma, on_delete=models.CASCADE, related_name='disciplinas', verbose_name='Turma')
     professor = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, verbose_name='Professor')
@@ -62,8 +64,9 @@ class Disciplina(models.Model):
 
 
 class Aluno(models.Model):
+    dono = models.ForeignKey(User, on_delete=models.CASCADE, null=True, editable=False, related_name='+')
     nome = models.CharField('Nome Completo', max_length=150)
-    ra = models.CharField('RA / Matrícula', max_length=20, unique=True)
+    ra = models.CharField('RA / Matrícula', max_length=20)
     data_nascimento = models.DateField('Data de Nascimento', null=True, blank=True)
     turma = models.ForeignKey(Turma, on_delete=models.PROTECT, related_name='alunos', verbose_name='Turma')
     ativo = models.BooleanField('Matrícula Ativa', default=True)
@@ -72,6 +75,7 @@ class Aluno(models.Model):
         verbose_name = 'Aluno'
         verbose_name_plural = 'Alunos'
         ordering = ['nome']
+        unique_together = ('dono', 'ra')
 
     def __str__(self):
         return f'{self.nome} ({self.ra})'

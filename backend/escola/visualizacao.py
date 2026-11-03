@@ -30,15 +30,22 @@ def cadastro(request):
 
 @login_required
 def inicio(request):
-    disciplinas = Disciplina.objects.filter(professor=request.user)
-    ultimas_aulas = Aula.objects.filter(disciplina__professor=request.user)[:5]
+    disciplinas = Disciplina.objects.filter(dono=request.user)
+    ultimas_aulas = Aula.objects.filter(disciplina__dono=request.user)[:5]
     return render(request, 'escola/inicio.html', {
         'disciplinas': disciplinas,
         'ultimas_aulas': ultimas_aulas,
     })
 
 
-class Lista(LoginRequiredMixin, ListView):
+class DonoMixin:
+    campo_dono = 'dono'
+
+    def get_queryset(self):
+        return super().get_queryset().filter(**{self.campo_dono: self.request.user})
+
+
+class Lista(DonoMixin, LoginRequiredMixin, ListView):
     template_name = 'escola/lista.html'
     titulo = ''
     colunas = []  # (cabecalho, atributo)
@@ -49,16 +56,24 @@ class Lista(LoginRequiredMixin, ListView):
         ctx = super().get_context_data(**kwargs)
         ctx.update(titulo=self.titulo, colunas=self.colunas, rota=self.rota, extras=self.extras)
         ctx['linhas'] = [
-            {'obj': o, 'valores': [getattr(o, c[1]) for c in self.colunas]}
+            {'obj': o, 'valores': [
+                ('Ativo' if v else 'Inativo') if isinstance(v, bool) else v
+                for v in (getattr(o, c[1]) for c in self.colunas)
+            ]}
             for o in ctx['object_list']
         ]
         return ctx
 
 
-class Formulario(LoginRequiredMixin):
+class Formulario(DonoMixin, LoginRequiredMixin):
     template_name = 'escola/formulario.html'
     titulo = ''
     rota = ''
+
+    def get_form_kwargs(self):
+        kw = super().get_form_kwargs()
+        kw['usuario'] = self.request.user
+        return kw
 
     def get_success_url(self):
         return reverse_lazy(self.rota + '_lista')
@@ -73,7 +88,7 @@ class Formulario(LoginRequiredMixin):
         return super().form_valid(form)
 
 
-class Exclusao(LoginRequiredMixin, DeleteView):
+class Exclusao(DonoMixin, LoginRequiredMixin, DeleteView):
     template_name = 'escola/confirma_exclusao.html'
     rota = ''
 
@@ -179,6 +194,7 @@ class AlunoExcluir(Exclusao):
 
 # Aula
 class AulaLista(Lista):
+    campo_dono = 'disciplina__dono'
     model = Aula
     titulo = 'Aulas'
     rota = 'aula'
@@ -187,6 +203,7 @@ class AulaLista(Lista):
 
 
 class AulaNova(Formulario, CreateView):
+    campo_dono = 'disciplina__dono'
     model = Aula
     form_class = AulaForm
     titulo = 'Nova aula'
@@ -194,6 +211,7 @@ class AulaNova(Formulario, CreateView):
 
 
 class AulaEditar(Formulario, UpdateView):
+    campo_dono = 'disciplina__dono'
     model = Aula
     form_class = AulaForm
     titulo = 'Editar aula'
@@ -201,13 +219,14 @@ class AulaEditar(Formulario, UpdateView):
 
 
 class AulaExcluir(Exclusao):
+    campo_dono = 'disciplina__dono'
     model = Aula
     rota = 'aula'
 
 
 @login_required
 def frequencia(request, pk):
-    aula = get_object_or_404(Aula, pk=pk)
+    aula = get_object_or_404(Aula, pk=pk, disciplina__dono=request.user)
     alunos = aula.disciplina.turma.alunos.filter(ativo=True)
     if request.method == 'POST':
         faltosos = request.POST.getlist('faltou')
@@ -225,12 +244,7 @@ def frequencia(request, pk):
 
 @login_required
 def notas(request, pk):
-    disciplina = get_object_or_404(Disciplina, pk=pk)
-    perfil = getattr(request.user, 'perfil', None)
-    eh_agente = request.user.is_superuser or (perfil and perfil.tipo == 'agente_escolar')
-    if disciplina.professor_id != request.user.pk and not eh_agente:
-        messages.error(request, 'Você não é o professor desta disciplina.')
-        return redirect('inicio')
+    disciplina = get_object_or_404(Disciplina, pk=pk, dono=request.user)
     alunos = disciplina.turma.alunos.filter(ativo=True)
     if request.method == 'POST':
         for aluno in alunos:
