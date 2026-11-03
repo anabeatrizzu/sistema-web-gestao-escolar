@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block titulo %}{{ titulo }}{% endblock %}
+
+{% block conteudo %}
+<h2>{{ titulo }}</h2>
+<p><a class="btn" href="{% url rota|add:'_novo' %}">Novo</a></p>
+
+{% if linhas %}
+<table>
+    <thead>
+        <tr>
+            {% for c in colunas %}<th scope="col">{{ c.0 }}</th>{% endfor %}
+            <th scope="col">Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for l in linhas %}
+        <tr>
+            {% for v in l.valores %}<td>{{ v|default_if_none:"-" }}</td>{% endfor %}
+            <td>
+                {% for texto, url in extras %}<a href="{% url url l.obj.pk %}">{{ texto }}</a> | {% endfor %}
+                <a href="{% url rota|add:'_editar' l.obj.pk %}">Editar</a> |
+                <a href="{% url rota|add:'_excluir' l.obj.pk %}">Excluir</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>Nada cadastrado ainda.</p>
+{% endif %}
+{% endblock %}

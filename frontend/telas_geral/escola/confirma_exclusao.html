@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block conteudo %}
+<h2>Excluir</h2>
+<form method="post" class="caixa-login">
+    {% csrf_token %}
+    <p>Excluir "{{ object }}"?</p>
+    <button type="submit" class="btn">Excluir</button>
+    <a href="{% url rota|add:'_lista' %}">Cancelar</a>
+</form>
+{% endblock %}

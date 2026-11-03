@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block titulo %}Frequência{% endblock %}
+
+{% block conteudo %}
+<h2>Frequência</h2>
+<p>{{ aula }} - {{ aula.conteudo }}</p>
+
+{% if linhas %}
+<form method="post">
+    {% csrf_token %}
+    <table>
+        <thead>
+            <tr>
+                <th scope="col">Aluno</th>
+                <th scope="col">Faltou</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for l in linhas %}
+            <tr>
+                <td>{{ l.aluno.nome }}</td>
+                <td><input type="checkbox" name="faltou" value="{{ l.aluno.pk }}" {% if l.faltou %}checked{% endif %}></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <p><button type="submit" class="btn">Salvar</button> <a href="{% url 'aula_lista' %}">Cancelar</a></p>
+</form>
+{% else %}
+<p>Nenhum aluno ativo nesta turma.</p>
+{% endif %}
+{% endblock %}

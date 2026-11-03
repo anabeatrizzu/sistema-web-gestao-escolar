@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block conteudo %}
+<h2>Painel do professor</h2>
+
+<section class="bloco">
+    <h3>Minhas disciplinas</h3>
+    {% if disciplinas %}
+    <ul class="lista-cards">
+        {% for d in disciplinas %}
+        <li class="card">
+            <strong>{{ d.nome }}</strong>
+            <span>{{ d.turma }}</span>
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p> Não tem disciplina ainda.</p>
+    {% endif %}
+</section>
+
+<section class="bloco">
+    <h3>Últimas aulas registradas</h3>
+    {% if ultimas_aulas %}
+    <table>
+        <thead>
+            <tr>
+                <th scope="col">Data</th>
+                <th scope="col">Disciplina</th>
+                <th scope="col">Conteudo</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for a in ultimas_aulas %}
+            <tr>
+                <td>{{ a.data|date:"d/m/Y" }}</td>
+                <td>{{ a.disciplina.nome }}</td>
+                <td>{{ a.conteudo }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>Nenhuma aula registrada.</p>
+    {% endif %}
+</section>
+{% endblock %}

@@ -1,0 +1,60 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block titulo %}Gestão Escolar{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/estilo.css' %}">
+</head>
+
+<body>
+    <a href="#conteudo" class="pular">Pular para o conteúdo</a>
+    <header class="topo">
+        <h1 class="logo"><a href="{% url 'inicio' %}">Gestão Escolar</a></h1>
+        {% if user.is_authenticated %}
+        <nav aria-label="Menu principal">
+            <ul>
+                <li><a href="{% url 'inicio' %}">Início</a></li>
+                <li><a href="{% url 'turma_lista' %}">Turmas</a></li>
+                <li><a href="{% url 'disciplina_lista' %}">Disciplinas</a></li>
+                <li><a href="{% url 'aluno_lista' %}">Alunos</a></li>
+                <li><a href="{% url 'aula_lista' %}">Aulas</a></li>
+                <li><span>Olá usuario</span></li>
+                <li>
+                    <form method="post" action="{% url 'logout' %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn-link">Sair</button>
+                    </form>
+                </li>
+            </ul>
+        </nav>
+        {% endif %}
+    </header>
+
+    <main id="conteudo">
+        {% if messages %}
+        <div class="mensagens" role="status" aria-live="polite">
+            {% for m in messages %}
+            <p class="msg {{ m.tags }}">{{ m }}</p>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% block conteudo %}{% endblock %}
+    </main>
+
+    <script src="{% static 'js/main.js' %}"></script>
+    {% block scripts %}{% endblock %}
+    <div vw class="enabled">
+        <div vw-access-button class="active"></div>
+        <div vw-plugin-wrapper>
+            <div class="vw-plugin-top-wrapper"></div>
+        </div>
+    </div>
+    <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+    <script>new window.VLibras.Widget('https://vlibras.gov.br/app');</script>
+</body>
+
+</html>

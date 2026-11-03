@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block titulo %}{{ titulo }}{% endblock %}
+
+{% block conteudo %}
+<h2>{{ titulo }}</h2>
+<form method="post" class="caixa-login">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn">Salvar</button>
+    <a href="{% url rota|add:'_lista' %}">Cancelar</a>
+</form>
+{% endblock %}
